@@ -38,6 +38,10 @@ public class ProductService {
         return productDto;
     }
 
+    public List<Product> allProducts() {
+        return productRepository.findAll();
+    }
+
     public List<ProductDto> getAllProducts() {
         List<Product> allProducts = productRepository.findAll();
 

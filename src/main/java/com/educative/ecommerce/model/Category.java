@@ -20,7 +20,6 @@ public class Category {
     private @NotBlank String imageUrl;
 
     // add imageURL here
-
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     Set<Product> products;
@@ -33,7 +32,8 @@ public class Category {
         this.description = description;
     }
 
-    public Category(@NotBlank String categoryName, @NotBlank String description, @NotBlank String imageUrl) {
+    public Category(Integer id, @NotBlank String categoryName, @NotBlank String description,
+                    @NotBlank String imageUrl) {
         this.categoryName = categoryName;
         this.description = description;
         this.imageUrl = imageUrl;

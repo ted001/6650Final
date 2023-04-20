@@ -1,5 +1,6 @@
 package com.educative.ecommerce.service;
 
+import com.educative.ecommerce.model.Cart;
 import com.educative.ecommerce.model.Category;
 import com.educative.ecommerce.repository.CategoryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,4 +33,5 @@ public class CategoryService {
     public boolean findById(int categoryId) {
         return categoryRepo.findById(categoryId).isPresent();
     }
+
 }

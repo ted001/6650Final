@@ -32,6 +32,16 @@ public class Product {
     @JoinColumn(name = "category_id")
     Category category;
 
+    public Product() {
+    }
+
+    public Product(String name, String imageURL, double price, String description, Category category) {
+        this.name = name;
+        this.imageURL = imageURL;
+        this.price = price;
+        this.description = description;
+        this.category = category;
+    }
 
     public String getName() {
         return name;
