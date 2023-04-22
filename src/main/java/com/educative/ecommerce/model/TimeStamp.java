@@ -5,13 +5,11 @@ import javax.persistence.*;
 @Entity
 @Table(name = "timestamp")
 public class TimeStamp {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int val;
     private long time;
-
     public TimeStamp(int val) {
         this.val = val;
     }

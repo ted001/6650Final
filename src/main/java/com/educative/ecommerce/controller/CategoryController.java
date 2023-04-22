@@ -22,7 +22,6 @@ public class CategoryController {
     @Autowired
     CategoryService categoryService;
 
-
     @PostMapping("/create")
     public ResponseEntity<ApiResponse> createCategory(@RequestBody Category category) {
         categoryService.createCategory(category);
@@ -35,7 +34,7 @@ public class CategoryController {
     }
 
     @PostMapping("/update/{categoryId}")
-    public ResponseEntity<ApiResponse> updateCategory(@PathVariable("categoryId") int categoryId, @RequestBody Category category ) {
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable("categoryId") int categoryId, @RequestBody Category category ) throws Exception {
         System.out.println("category id " + categoryId);
         if (!categoryService.findById(categoryId)) {
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, "category does not exists"), HttpStatus.NOT_FOUND);

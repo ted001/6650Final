@@ -2,15 +2,10 @@ package com.educative.ecommerce.common.command;
 
 import com.educative.ecommerce.common.ApiResponse;
 import com.educative.ecommerce.dto.cart.AddToCartDto;
-import com.educative.ecommerce.model.Cart;
 import com.educative.ecommerce.model.User;
 import com.educative.ecommerce.service.CartService;
-import com.educative.ecommerce.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.awt.print.Book;
-import java.util.Optional;
 
 public class AddToCartCommand extends Command {
 

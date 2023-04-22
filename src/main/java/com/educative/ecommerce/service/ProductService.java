@@ -11,20 +11,32 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Service
 public class ProductService {
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
     @Autowired
     ProductRepository productRepository;
 
-    public void createProduct(ProductDto productDto, Category category) {
-        Product product = new Product();
-        product.setDescription(productDto.getDescription());
-        product.setImageURL(productDto.getImageURL());
-        product.setName(productDto.getName());
-        product.setCategory(category);
-        product.setPrice(productDto.getPrice());
-        productRepository.save(product);
+    public void createProduct(ProductDto productDto, Category category) throws Exception {
+        if (lock.writeLock().tryLock()) {
+            // tryLock() to prevent deadlock
+            try {
+                Product product = new Product();
+                product.setDescription(productDto.getDescription());
+                product.setImageURL(productDto.getImageURL());
+                product.setName(productDto.getName());
+                product.setCategory(category);
+                product.setPrice(productDto.getPrice());
+                productRepository.save(product);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        } else {
+            throw new Exception("failed to acquire lock");
+        }
     }
 
     public ProductDto getProductDto(Product product) {
@@ -53,17 +65,26 @@ public class ProductService {
     }
 
     public void updateProduct(ProductDto productDto, Integer productId) throws Exception {
-        Optional<Product> optionalProduct = productRepository.findById(productId);
-        // throw an exception if product does not exists
-        if (!optionalProduct.isPresent()) {
-            throw new Exception("product not present");
+        if (lock.writeLock().tryLock()) {
+            // tryLock() to prevent deadlock
+            try {
+                Optional<Product> optionalProduct = productRepository.findById(productId);
+                // throw an exception if product does not exists
+                if (!optionalProduct.isPresent()) {
+                    throw new Exception("product not present");
+                }
+                Product product = optionalProduct.get();
+                product.setDescription(productDto.getDescription());
+                product.setImageURL(productDto.getImageURL());
+                product.setName(productDto.getName());
+                product.setPrice(productDto.getPrice());
+                productRepository.save(product);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        } else {
+            throw new Exception("failed to acquire lock");
         }
-        Product product = optionalProduct.get();
-        product.setDescription(productDto.getDescription());
-        product.setImageURL(productDto.getImageURL());
-        product.setName(productDto.getName());
-        product.setPrice(productDto.getPrice());
-        productRepository.save(product);
     }
 
     public Product findById(Integer productId) throws ProductNotExistsException {

@@ -3,11 +3,8 @@ package com.educative.ecommerce.controller;
 import com.educative.ecommerce.common.ApiResponse;
 import com.educative.ecommerce.dto.ProductDto;
 import com.educative.ecommerce.model.Category;
-import com.educative.ecommerce.model.Product;
 import com.educative.ecommerce.repository.CategoryRepo;
 import com.educative.ecommerce.service.ProductService;
-import io.swagger.annotations.Api;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +33,12 @@ public class ProductController {
          if (!optionalCategory.isPresent()) {
              return new ResponseEntity<ApiResponse>(new ApiResponse(false, "category does not exists"), HttpStatus.BAD_REQUEST);
          }
-         productService.createProduct(productDto, optionalCategory.get());
-         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "product has been added"), HttpStatus.CREATED);
+        try {
+            productService.createProduct(productDto, optionalCategory.get());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<ApiResponse>(new ApiResponse(true, "product has been added"), HttpStatus.CREATED);
     }
 
     @GetMapping("/")

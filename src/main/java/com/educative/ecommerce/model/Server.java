@@ -8,7 +8,6 @@ public class Server {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String host;
     private int port;
     private long raTimestamp;
