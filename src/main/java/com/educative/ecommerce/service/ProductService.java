@@ -17,9 +17,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Service
 public class ProductService {
     private ReadWriteLock lock = new ReentrantReadWriteLock();
+    
     @Autowired
     ProductRepository productRepository;
-
+    
     public void createProduct(ProductDto productDto, Category category) throws Exception {
         if (lock.writeLock().tryLock()) {
             // tryLock() to prevent deadlock
@@ -93,5 +94,10 @@ public class ProductService {
             throw new ProductNotExistsException("product id is invalid: " + productId);
         }
         return optionalProduct.get();
+    }
+    
+    public void delete(Integer productId) {
+        Product curProduct = findById(productId);
+        productRepository.delete(curProduct);
     }
 }
