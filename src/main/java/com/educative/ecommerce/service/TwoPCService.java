@@ -82,7 +82,7 @@ public class TwoPCService {
     }
 
     // Send commit add messages to all participates
-    public void commitAddProduct(ProductDto productDto, Category category) {
+    public void commitAddProduct(ProductDto productDto, Category category) throws Exception {
         initialParticipants();
         for (int i = 0; i < participants.size(); i++) {
             jdbcTemplate.update(
