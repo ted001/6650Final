@@ -3,17 +3,20 @@ package com.educative.ecommerce.controller;
 import com.educative.ecommerce.common.ApiResponse;
 import com.educative.ecommerce.dto.ProductDto;
 import com.educative.ecommerce.model.Category;
+import com.educative.ecommerce.model.Product;
 import com.educative.ecommerce.repository.CategoryRepo;
 import com.educative.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.educative.ecommerce.service.TwoPCService;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,9 @@ public class ProductController {
 
     @Autowired
     CategoryRepo categoryRepo;
+    
+    @Autowired
+    TwoPCService twoPCservice;
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) {
@@ -55,8 +61,6 @@ public class ProductController {
     }
 
     // create an api to edit the product
-
-
     @PostMapping("/update/{productId}")
     public ResponseEntity<ApiResponse> updateProduct(@PathVariable("productId") Integer productId, @RequestBody ProductDto productDto) throws Exception {
         Optional<Category> optionalCategory = categoryRepo.findById(productDto.getCategoryId());
