@@ -42,7 +42,7 @@ public class TwoPCService {
     // initial all the Participant only when add and delete products
     private void initialParticipants() {
         List<Server> Servers = coordinatorService.serverList();
-        if (participants.size() < < Servers.size()) {
+        if (participants.size() < Servers.size()) {
             for (int i = participants.size(); i < Servers.size(); i++) {
                 // the initial state is 0
                 Participant curServer = new Participant(Servers.get(i), 0);
