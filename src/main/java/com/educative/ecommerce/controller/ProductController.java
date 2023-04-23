@@ -29,16 +29,23 @@ public class ProductController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) {
-         Optional<Category> optionalCategory = categoryRepo.findById(productDto.getCategoryId());
-         if (!optionalCategory.isPresent()) {
-             return new ResponseEntity<ApiResponse>(new ApiResponse(false, "category does not exists"), HttpStatus.BAD_REQUEST);
-         }
-        try {
-            productService.createProduct(productDto, optionalCategory.get());
-        } catch (Exception e) {
-            e.printStackTrace();
+                 Optional<Category> optionalCategory = categoryRepo.findById(productDto.getCategoryId());
+        if (optionalCategory.isPresent()) {
+            try {
+                boolean flag = twoPCservice.prepareProduct();
+                if (flag) {
+                    twoPCservice.commitAddProduct(productDto, optionalCategory.get());
+                    return new ResponseEntity<ApiResponse>(new ApiResponse(true, "product has been added"),
+                            HttpStatus.CREATED);
+                }
+            } catch (Exception e) {
+                System.out.println("Something is going Wrong");
+            }
         }
-        return new ResponseEntity<ApiResponse>(new ApiResponse(true, "product has been added"), HttpStatus.CREATED);
+        twoPCservice.abortProduct();
+        return new ResponseEntity<ApiResponse>(
+                new ApiResponse(false, "category does not exists or product has not been added"),
+                HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/")
@@ -59,5 +66,25 @@ public class ProductController {
         productService.updateProduct(productDto, productId);
         return new ResponseEntity<ApiResponse>(new ApiResponse(true, "product has been updated"), HttpStatus.OK);
     }
+    
+    @DeleteMapping("/delete/{productId}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable("productId") Integer productId) throws Exception {
 
+        Product product = productService.findById(productId);
+        if (product != null) {
+            try {
+                boolean flag = twoPCservice.prepareProduct();
+                if (flag) {
+                    twoPCservice.commitDeleteProduct(productId);
+                    return new ResponseEntity<ApiResponse>(new ApiResponse(true, "product has been deleted"),
+                            HttpStatus.CREATED);
+                }
+            } catch (Exception e) {
+                System.out.println("Something is going Wrong");
+            }
+        }
+        twoPCservice.abortProduct();
+        return new ResponseEntity<ApiResponse>(new ApiResponse(false, "product does not exists"),
+                HttpStatus.BAD_REQUEST);
+    }
 }
