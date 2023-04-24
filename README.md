@@ -35,12 +35,31 @@ http://localhost:8021/h2-console/
 
 
 ## Client Side
+git clone https://github.com/MarshmelloRice/frontend.git
 
-1. use the test account to signin 
+In the project folder terminal, run
+> npm install
+> 
+> npm run serve
 
-![image](https://user-images.githubusercontent.com/8579944/233251329-a9f226f1-b5e9-47c8-8721-45c4c98c6b9b.png)
 
-2. Add Product to the cart
+1. Open Browser and input http://localhost:8080/
 
-![image](https://user-images.githubusercontent.com/8579944/233252067-1e43bbff-9ae8-411c-b79f-68d86229a18e.png)
+
+
+2. use the test account to signin
+
+> Email: 1@1.com
+> 
+> Password: 123
+
+![image](https://user-images.githubusercontent.com/8579944/234124670-fe2b55dd-b836-4d23-8b5b-66a18aa262ff.png)
+
+
+3. Browse and Add Product to the cart
+
+![image](https://user-images.githubusercontent.com/8579944/234124884-834f422e-6e48-4f8a-9a8a-cb141c26e5ab.png)
+
+![image](https://user-images.githubusercontent.com/8579944/234124852-6861e155-5a71-417b-8c54-a6cc38da4633.png)
+
 
