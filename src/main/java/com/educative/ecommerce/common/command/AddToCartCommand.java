@@ -17,7 +17,7 @@ public class AddToCartCommand extends Command {
     }
 
     public ResponseEntity<Object> execute(CartService cartService) {
-        System.out.println("Add:" + cart);
+        //System.out.println("Add:" + cart);
         cartService.addToCart(cart, user);
         return new ResponseEntity<>(new ApiResponse(true, "Added to cart"), HttpStatus.CREATED);
     }

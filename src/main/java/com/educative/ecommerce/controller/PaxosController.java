@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 @Controller
-public class PaxosController{
+public class PaxosController {
 
     @Autowired
     MyServerRepository myServer;
@@ -56,14 +56,14 @@ public class PaxosController{
         List<LinkedHashMap<String, Object>> serverList =
                 (List<LinkedHashMap<String, Object>>) restService.post(restService.generateURL("localhost", 8088, "allservers"), null).getBody();
         List<Server> servers = new ArrayList<>();
-        for (LinkedHashMap<String, Object> serverL: serverList) {
-            Server server = new Server((String) serverL.get("host"), (Integer)serverL.get("port"));
+        for (LinkedHashMap<String, Object> serverL : serverList) {
+            Server server = new Server((String) serverL.get("host"), (Integer) serverL.get("port"));
             servers.add(server);
         }
 
         //Transaction Phase
-        System.out.println("Proposing " + transaction.getId());
-        for (Server server: servers) {
+        System.out.println("Start a proposal No. " + transaction.getId());
+        for (Server server : servers) {
             LinkedHashMap<String, Object> promiseL =
                     (LinkedHashMap<String, Object>) restService.post(restService.generateURL(server.getHost(), server.getPort(), "prepare"), transaction).getBody();
             Promise promise = new Promise(promiseL);
@@ -79,10 +79,10 @@ public class PaxosController{
         }
 
         if (promisedServers <= serverList.size() / 2) {
-            System.out.println(transaction.getId()+ " failed to reach a consensus!");
+            System.out.println(transaction.getId() + " failed to reach a consensus," + "due to only " + promisedServers + " supports.");
             return new ResponseEntity<>(null, HttpStatus.BAD_GATEWAY);
         } else {
-            System.out.println(transaction.getId()+ " reached a consensus!");
+            System.out.println(promisedServers + " out of " + serverList.size() + " servers replied promises");
         }
 
         int numAccepted = 0;
@@ -92,6 +92,15 @@ public class PaxosController{
             if (value != null && value == transaction.getId()) {
                 numAccepted++;
             }
+        }
+
+        if (numAccepted <= serverList.size() / 2) {
+            System.out.println(transaction.getId() + " failed to reach a consensus," + "due to only " + numAccepted + " supports.");
+            return new ResponseEntity<>(null, HttpStatus.BAD_GATEWAY);
+        } else {
+            System.out.println(transaction.getId() + " reached a consensus! " + numAccepted + " out of " + serverList.size() +
+                    " servers accepted " +
+                    "the proposal message.");
         }
 
         ResponseEntity<Object> response = new ResponseEntity<>(false, HttpStatus.BAD_GATEWAY);
@@ -104,7 +113,7 @@ public class PaxosController{
     @PostMapping("/prepare")
     public ResponseEntity<Object> prepare(@RequestBody Transaction transaction) {
 
-//        Implementing random failure of the server with a probability of 0.1
+        // Implementing random failure of the server with a probability of 0.1
         if (Math.random() <= FAILURE_CHANCE) {
             System.out.println("Got Preparation request for " + transaction.getId() + ": Failing Server");
             return new ResponseEntity<>(new Promise(false, null), HttpStatus.OK);
@@ -141,9 +150,9 @@ public class PaxosController{
     @PostMapping("/accept")
     public ResponseEntity<Object> accept(@RequestBody Transaction transaction) throws RemoteException {
 
-//        Implementing random failure of the server with a probability of 0.1
+        // Implementing random failure of the server with a probability of 0.1
         if (Math.random() <= FAILURE_CHANCE) {
-            System.out.println("Got Preparation request for " + transaction.getId() + ": Failing Server");
+            System.out.println("Got Accept request for " + transaction.getId() + ": Failing Server");
             return new ResponseEntity<>(Long.MIN_VALUE, HttpStatus.OK);
         }
 
@@ -173,7 +182,7 @@ public class PaxosController{
 
     // Implementation of paxos learning
     @PostMapping("/learn")
-    public ResponseEntity<Object> learn(@RequestBody Transaction transaction){
+    public ResponseEntity<Object> learn(@RequestBody Transaction transaction) {
         System.out.println("Got Learn request for " + transaction.getId() + ": Learned");
         resetPaxos();
         return TransactionExecutor.execute(transaction, userService, cartService);
