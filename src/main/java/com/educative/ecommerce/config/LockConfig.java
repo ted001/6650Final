@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.jdbc.lock.DefaultLockRepository;
 import org.springframework.integration.jdbc.lock.JdbcLockRegistry;
 import org.springframework.integration.jdbc.lock.LockRepository;
+import org.springframework.integration.support.locks.LockRegistry;
+
 
 import javax.sql.DataSource;
 
@@ -18,5 +20,10 @@ public class LockConfig {
     @Bean
     public JdbcLockRegistry jdbcLockRegistry(LockRepository lockRepository){
         return new JdbcLockRegistry(lockRepository);
+    }
+
+    @Bean
+    public LockRegistry lockRegistry(JdbcLockRegistry jdbcLockRegistry) {
+        return jdbcLockRegistry;
     }
 }

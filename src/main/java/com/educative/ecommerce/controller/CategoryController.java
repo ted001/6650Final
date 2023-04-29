@@ -31,9 +31,22 @@ public class CategoryController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse> createCategory(@RequestBody Category category) {
-        categoryService.createCategory(category);
-        return new ResponseEntity<>(new ApiResponse(true, "a new category created"), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> createCategory(@RequestBody Category category) throws Exception {
+        Lock lock = lockRegistry.obtain("create new category");
+
+        try {
+            if (lock.tryLock(1000, TimeUnit.SECONDS)) {
+                try {
+                    categoryService.createCategory(category);
+                    return new ResponseEntity<>(new ApiResponse(true, "a new category created"), HttpStatus.CREATED);
+                } finally {
+                    lock.unlock();
+                }
+            }
+        } catch (InterruptedException e) {
+            throw new Exception("failed to acquire lock");
+        }
+        return null;
     }
 
     @GetMapping("/")
@@ -46,16 +59,20 @@ public class CategoryController {
         System.out.println("category id " + categoryId);
         Lock lock = lockRegistry.obtain(categoryId);
 
-        if (lock.tryLock(1000, TimeUnit.SECONDS)) {
-            try {
-                if (!categoryService.findById(categoryId)) {
-                    return new ResponseEntity<ApiResponse>(new ApiResponse(false, "category does not exists"), HttpStatus.NOT_FOUND);
+        try {
+            if (lock.tryLock(1000, TimeUnit.SECONDS)) {
+                try {
+                    if (!categoryService.findById(categoryId)) {
+                        return new ResponseEntity<ApiResponse>(new ApiResponse(false, "category does not exists"), HttpStatus.NOT_FOUND);
+                    }
+                    categoryService.editCategory(categoryId, category);
+                    return new ResponseEntity<ApiResponse>(new ApiResponse(true, "category has been updated"), HttpStatus.OK);
+                } finally {
+                    lock.unlock();
                 }
-                categoryService.editCategory(categoryId, category);
-                return new ResponseEntity<ApiResponse>(new ApiResponse(true, "category has been updated"), HttpStatus.OK);
-            } finally {
-                lock.unlock();
             }
+        } catch (Exception e) {
+            throw new Exception("failed to acquire lock");
         }
         return null;
     }
